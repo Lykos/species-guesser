@@ -9,6 +9,12 @@ module SpeciesGuesser
 
     attr_reader :name, :link
 
+    def <=>(other)
+      @name <=> other.name
+    end
+
+    include Comparable
+
   end
 
 end
