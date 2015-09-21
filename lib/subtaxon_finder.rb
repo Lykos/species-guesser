@@ -14,15 +14,18 @@ module SpeciesGuesser
     def find_subtaxons(page)
       interesting_area = page.at('#mw-content-text')
       p_children = interesting_area.children.select { |child| child.name == 'p' }
-      p p_children.find do |p_child|
+      extractions = p_children.map do |p_child|
         extract_around_selflink(p_child)
-      end
+      end.compact
+      raise "Unable to extract taxon information from https://species.wikimedia.org." if extractions.empty?
+      raise "Extracted ambiguous taxon information from https://species.wikimedia.org." if extractions.length > 1
+      extractions.first
     end
 
     def extract_around_selflink(element)
       selflink_element = element.at('.selflink')
       return nil unless selflink_element
-      level_name = clean_level_name(selflink_element.previous_element.text)
+      level_name = clean_level_name(selflink_element.previous_sibling.text)
       taxon_name = selflink_element.text
       sibling = selflink_element
       sub_level_name = nil
