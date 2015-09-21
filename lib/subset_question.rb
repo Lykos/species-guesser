@@ -15,7 +15,8 @@ module SpeciesGuesser
 
     # Returns a human readable representation of the question.
     def to_s
-      "Is the wanted taxon among of the following #{@taxon_group.level_name} or their subtaxons?\n" + @taxon_group.taxons.map { |taxon| "- #{taxon.name}\n" }.join
+      "Is the wanted taxon among of the following #{@taxon_group.level_name} or their subtaxons?\n" +
+        @taxon_group.taxons.map { |taxon| "- #{taxon.name}\n" }.join
     end
 
   end

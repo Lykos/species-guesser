@@ -14,41 +14,44 @@ module SpeciesGuesser
     
     def initialize
       @crawler = Crawler.new
-      @taxon_group = TaxonGroup.new(START_LEVEL_NAME, [START_TAXON])
-      @final_asked = false
+      @taxons = TaxonGroup.new(START_LEVEL_NAME, [START_TAXON])
     end
 
     # Generate a question that should be asked to the other player.
     def generate_question
-      taxons = @taxon_group.taxons
-      if taxons.empty?
+      @last_question = generate_question_internal
+    end
+
+    def generate_question_internal
+      final_asked = @last_question and @last_question.is_final?
+      if @taxons.empty?
         raise 'No possible species left.'
-      elsif taxons.length == 1 and not @final_asked
-        @final_asked = true
-        FinalQuestion.new(taxons[0])
-      else 
-        @final_asked = false
-        if taxons.length == 1
-          @taxon_group = @crawler.get_subtaxons(taxons[0])
-          generate_question
-        else
-          split_index = taxons.length / 2
-          @chosen_taxons = taxons.shuffle[split_index..-1].sort
-          SubsetQuestion.new(TaxonGroup.new(@taxon_group.level_name, @chosen_taxons))
-        end
+      elsif @taxons.unique? and not final_asked
+        FinalQuestion.new(@taxons.only)
+      elsif @taxons.unique?
+        # We know it is not this taxon itself, but one of its subtaxons, so we have
+        # to go one level deeper.
+        @taxons = @crawler.get_subtaxons(@taxons.only)
+        # Recurse. This terminates because the taxonomy tree is finite.
+        generate_question_internal
+      else
+        # Split into two halves and ask a question to figure out which half it is.
+        @unchosen_taxons, @chosen_taxons = @taxons.random_split
+        SubsetQuestion.new(@chosen_taxons)
       end
     end
 
     # Notifies the guesser of the answer of the other player to the last question.
     # +answer+:: A boolean indicating whether the answer to the previously asked question was yes.
     def answer_last_question(answer)
-      if @final_asked
-      elsif answer
-        @taxon_group = TaxonGroup.new(@taxon_group.level_name, @chosen_taxons)
+      if @last_question.is_final?
+        # We don't get any additional information here except if it ends the game. So nothing happens.
       else
-        @taxon_group = TaxonGroup.new(@taxon_group.level_name, @taxon_group.taxons - @chosen_taxons)
+        @taxons = if answer then @chosen_taxons else @unchosen_taxons end
       end
     end
+
+    private :generate_question_internal
 
   end
 
