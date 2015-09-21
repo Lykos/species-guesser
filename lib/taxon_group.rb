@@ -3,11 +3,19 @@ module SpeciesGuesser
   # Represents a group of sibling taxons.
   class TaxonGroup
 
+    # Neutral element for the name of taxons. This can be used as a fallback if the name cannot
+    # be determined and is compatible for joining with all other names.
+    NEUTRAL_NAME = 'TAXONS'
+
     # +level_name+:: The plural of the name of this level of taxons (e.g. "familiae").
     def initialize(level_name, taxons)
-      @level_name = level_name
+      # Replace nil with the neutral name.
+      @level_name = level_name || NEUTRAL_NAME
       @taxons = taxons
     end
+
+    # The neutral element for joining taxon groups.
+    NEUTRAL_TAXON_GROUP = TaxonGroup.new(NEUTRAL_NAME, [])
 
     attr_reader :level_name, :taxons
 

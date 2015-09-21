@@ -26,14 +26,10 @@ module SpeciesGuesser
       final_asked = @last_question and @last_question.is_final?
       if @taxons.empty?
         raise 'No possible species left.'
-      elsif @taxons.unique? and not final_asked
-        FinalQuestion.new(@taxons.only)
       elsif @taxons.unique?
-        # We know it is not this taxon itself, but one of its subtaxons, so we have
-        # to go one level deeper.
-        @taxons = @crawler.get_subtaxons(@taxons.only)
-        # Recurse. This terminates because the taxonomy tree is finite.
-        generate_question_internal
+        taxon_info = @crawler.get_subtaxons(@taxons.only)
+        @taxons = taxon_info.taxon_group
+        FinalQuestion.new(taxon_info)
       else
         # Split into two halves and ask a question to figure out which half it is.
         @unchosen_taxons, @chosen_taxons = @taxons.random_split
