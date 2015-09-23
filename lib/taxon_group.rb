@@ -5,17 +5,17 @@ module SpeciesGuesser
 
     # Neutral element for the name of taxons. This can be used as a fallback if the name cannot
     # be determined and is compatible for joining with all other names.
-    NEUTRAL_NAME = 'TAXONS'
+    NEUTRAL_TAXON_NAME = 'taxons'
 
     # +level_name+:: The plural of the name of this level of taxons (e.g. "familiae").
     def initialize(level_name, taxons)
       # Replace nil with the neutral name.
-      @level_name = level_name || NEUTRAL_NAME
+      @level_name = level_name || NEUTRAL_TAXON_NAME
       @taxons = taxons
     end
 
     # The neutral element for joining taxon groups.
-    NEUTRAL_TAXON_GROUP = TaxonGroup.new(NEUTRAL_NAME, [])
+    NEUTRAL_TAXON_GROUP = TaxonGroup.new(NEUTRAL_TAXON_NAME, [])
 
     attr_reader :level_name, :taxons
 
@@ -48,6 +48,17 @@ module SpeciesGuesser
       second_group = @taxons - first_group
       [TaxonGroup.new(@level_name, first_group),
        TaxonGroup.new(@level_name, second_group)]
+    end
+
+    # Creates a new TaxonGroup by merging this object with another taxon group.
+    # Raises an error in case of incompatible TaxonGroups, i.e. when the level names are incompatible.
+    # +other+:: Another TaxonGroup.
+    def merge(other)
+      if @level_name != NEUTRAL_TAXON_NAME and other.level_name != NEUTRAL_TAXON_NAME and @level_name != other.level_name
+        raise "Incompatible level names #{@level_name} and #{other.level_name}."
+      end
+      level_name = if @level_name == NEUTRAL_TAXON_NAME then other.level_name else @level_name end
+      TaxonGroup.new(level_name, @taxons + other.taxons)
     end
 
   end

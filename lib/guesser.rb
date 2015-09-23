@@ -12,9 +12,10 @@ module SpeciesGuesser
     START_LEVEL_NAME = "Regna"
     START_TAXON = Taxon.new('Animalia', '/wiki/Animalia')
     
-    def initialize
+    def initialize(frequency_counter)
       @crawler = Crawler.new
       @taxons = TaxonGroup.new(START_LEVEL_NAME, [START_TAXON])
+      @frequency_counter = frequency_counter
     end
 
     # Generate a question that should be asked to the other player.
@@ -44,6 +45,9 @@ module SpeciesGuesser
         # We don't get any additional information here except if it ends the game. So nothing happens.
       else
         @taxons = if answer then @chosen_taxons else @unchosen_taxons end
+        if @taxons.unique?
+          @frequency_counter.count!(@taxons.only)
+        end
       end
     end
 

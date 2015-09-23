@@ -8,8 +8,8 @@ require 'taxon'
 include SpeciesGuesser
 
 crawler = Crawler.new
-puts "Taxon?"
-name = gets.chomp
-link = "/wiki/" + name.gsub(/\s/, '_').gsub(/\W+/, '')
-taxon = Taxon.new(name, link)
-p crawler.get_subtaxons(taxon)
+for name in ARGV
+  link = "/wiki/" + name.gsub(/\s/, '_').gsub(/\W+/, '')
+  taxon = Taxon.new(name, link)
+  p crawler.get_subtaxons(taxon)
+end

@@ -4,10 +4,13 @@ $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'asker'
 require 'guesser'
+require 'frequency_persistence'
 
 include SpeciesGuesser
 
-guesser = Guesser.new
+persistence = FrequencyPersistence.new
+frequency_counter = persistence.load
+guesser = Guesser.new(frequency_counter)
 asker = Asker.new
 
 found = false
@@ -20,3 +23,4 @@ until found
 end
 
 puts "The SpeciesGuesser found the species!"
+persistence.save(frequency_counter)

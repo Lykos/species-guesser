@@ -18,14 +18,18 @@ module SpeciesGuesser
         extract_around_selflink(p_child)
       end.compact
       raise "Unable to extract taxon information from https://species.wikimedia.org." if extractions.empty?
-      raise "Extracted ambiguous taxon information from https://species.wikimedia.org." if extractions.length > 1
-      extractions.first
+      extractions.reduce { |a, b| a.merge(b) }
     end
 
     def extract_around_selflink(element)
       selflink_element = element.at('.selflink')
       return nil unless selflink_element
-      level_name = clean_level_name(selflink_element.previous_sibling.text)
+      previous_sibling = selflink_element.previous_sibling
+      level_name = if previous_sibling
+                     clean_level_name(previous_sibling.text)
+                   else
+                     nil
+                   end
       taxon_name = selflink_element.text
       sibling = selflink_element
       sub_level_name = nil
