@@ -64,7 +64,7 @@ module SpeciesGuesser
       return nil unless link.attribute('href')
       name = link.text.strip
       taxon_link = link.attribute('href').value
-      Taxon.new(name, taxon_link)
+      TaxonRef.new(name, taxon_link)
     end
 
     def clean_level_name(level_name)

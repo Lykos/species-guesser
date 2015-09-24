@@ -14,7 +14,7 @@ module SpeciesGuesser
 
     # Loads the frequencies that taxons occurred from a file and 
     def load
-      frequencies = if @frequency_file.exist? then YAML::Load(@frequency_file.read) else {} end
+      frequencies = if @frequency_file.exist? then YAML::load(@frequency_file.read) else {} end
       FrequencyCounter.new(frequencies)
     end
 

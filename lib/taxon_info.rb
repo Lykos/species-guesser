@@ -1,6 +1,7 @@
 module SpeciesGuesser
 
   # Contains detailed information about a taxon including the name of its level, the name of its subtaxons and its subtaxons.
+  # This is the result that is returned after a https://species.wikimedia.org page has been fetched.
   class TaxonInfo
 
     NEUTRAL_TAXON_NAME = 'taxon'

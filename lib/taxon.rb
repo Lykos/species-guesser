@@ -1,25 +1,44 @@
 module SpeciesGuesser
 
-  # Basic information about a taxon. This is generated from linkts to the taxon by supertaxons.
-  # It can be used to extract detailed information from the taxon's page itself.
+  # Faced class that is used to query the taxon tree from https://species.wikimedia.org pages.
+  # Internally, it lazily queries pages as soon as they are needed.
   class Taxon
 
-    def initialize(name, link)
-      @name = name
-      @link = link
+    # +crawler+:: The crawler that will be query https://species.wikimedia.org pages.
+    # +taxon_ref+:: The TaxonRef whose information this taxon should fetch and represent.
+    # +super_taxon+:: The Taxon which is the supertaxon of this taxon.
+    def initialize(crawler, taxon_ref, super_taxon=nil)
+      @crawler = crawler
+      @taxon_ref = taxon_ref
+      @super_taxon = super_taxon
     end
 
-    attr_reader :name, :link
+    attr_reader :super_taxon
 
-    def <=>(other)
-      to_a <=> other.to_a
+    # The name of the level of the taxon in singular, e.g. "Familia".
+    def level_name
+      @level_name ||= taxon_info.level_name
     end
 
-    def to_a
-      [@name, @link]
+    # The name of the taxon in plural, e.g. "Mammalia".
+    def taxon_name
+      @taxon_name ||= taxon_info.taxon_name
     end
 
-    include Comparable
+    # The level name of the subtaxons in plural, e.g. "Familiae".
+    def sublevel_name
+      @sub_evel_name ||= taxon_info.taxon_group.level_name
+    end
+
+    def subtaxons
+      @subtaxons ||= taxon_info.taxon_group.taxons.collect { |taxon_ref| Taxon.new(@crawler, taxon_ref, self) }
+    end
+
+    def taxon_info
+      @taxon_info ||= @crawler.get_taxon_info(@taxon_ref)
+    end
+
+    private :taxon_info
 
   end
 

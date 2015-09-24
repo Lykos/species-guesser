@@ -7,7 +7,7 @@ module SpeciesGuesser
     # be determined and is compatible for joining with all other names.
     NEUTRAL_TAXON_NAME = 'taxons'
 
-    # +level_name+:: The plural of the name of this level of taxons (e.g. "familiae").
+    # +level_name+:: The plural of the name of this level of taxons, e.g. "Familiae".
     def initialize(level_name, taxons)
       # Replace nil with the neutral name.
       @level_name = level_name || NEUTRAL_TAXON_NAME
@@ -38,16 +38,6 @@ module SpeciesGuesser
     # Returns the number of taxons.
     def length
       @taxons.length
-    end
-
-    # Splits the taxon group into two disjoint taxon groups and returns those two.
-    # In case of an uneven length, the second taxon group will be bigger.
-    def random_split
-      raise 'Cannot split taxon group of length smaller than 2.' if length < 2
-      first_group = @taxons.sample(@taxons.length / 2)
-      second_group = @taxons - first_group
-      [TaxonGroup.new(@level_name, first_group),
-       TaxonGroup.new(@level_name, second_group)]
     end
 
     # Creates a new TaxonGroup by merging this object with another taxon group.
