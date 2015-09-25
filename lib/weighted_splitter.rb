@@ -2,7 +2,13 @@ module SpeciesGuesser
 
   class WeightedSplitter
 
-    # Returns a subarray of a given array and a given weight function such that the subarray has more than half of the weight
+    # Returns a subarray of a given array with at least half the elements and as close to half the elements as possible.
+    # +array+:: The array of which we should choose half the elements of.
+    def self.split(array)
+      array.sample((array.length + 1) / 2)
+    end
+
+    # Returns a subarray of a given array with a given weight function such that the subarray has more than half of the total weight
     # and as close to half the weight as possible.
     # +array+:: The array of which we should choose half the weight of.
     # +weight_function+:: A function that returns the weight of an element. This will be called once per element.
@@ -37,7 +43,7 @@ module SpeciesGuesser
         raise "Impossible to get more than half of the weights in an array. There must be something wrong with the weight function."
       end
       if best_weight == min_weight
-        best_elements += zero_weighted.sample((zero_weighted.length + 1) / 2).map { |e| e.first }
+        best_elements += split(zero_weighted.map { |e| e.first })
       end
       best_elements
     end

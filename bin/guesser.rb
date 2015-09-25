@@ -8,7 +8,7 @@ require 'crawler'
 require 'frequency_persistence'
 require 'guesser'
 require 'taxon'
-require 'top_down_strategy'
+require 'strategy_chooser'
 
 include SpeciesGuesser
 
@@ -18,7 +18,8 @@ persistence = FrequencyPersistence.new
 frequency_counter = persistence.load
 crawler = CachedCrawler.new(Crawler.new)
 start_taxon = Taxon.new(crawler, START_TAXON)
-strategy = TopDownStrategy.new(frequency_counter)
+strategy = StrategyChooser.new(frequency_counter).random
+puts "Chose strategy #{strategy.name}."
 guesser = Guesser.new(start_taxon, strategy)
 asker = Asker.new
 taxon = nil

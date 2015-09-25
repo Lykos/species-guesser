@@ -4,10 +4,15 @@ require 'weighted_splitter'
 
 module SpeciesGuesser
 
-  class TopDownStrategy
+  class WeightedTopDownStrategy
 
-    NAME = "top_down"
- 
+    NAME = "weighted_top_down"
+
+    # +frequency_counter+:: The frequency counter that can be queried for the number of times taxons have occurred in the past.
+    def initialize(frequency_counter)
+      @frequency_counter = frequency_counter
+    end
+
     def name
       NAME
     end
@@ -18,7 +23,7 @@ module SpeciesGuesser
         FinalQuestion.new(root_taxon)
       else
         taxons = state.possible_subtaxons(root_taxon)
-        taxon_subset = WeightedSplitter::split(taxons)
+        taxon_subset = WeightedSplitter::weighted_split(taxons) { |t| @frequency_counter.occurrences(t) }
         SubsetQuestion.new(root_taxon, taxon_subset)
       end
     end
