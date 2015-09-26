@@ -17,7 +17,7 @@ module SpeciesGuesser
       extractions = p_children.map do |p_child|
         extract_around_selflink(p_child)
       end.compact
-      raise "Unable to extract taxon information from #{taxon_ref.link}." if extractions.empty?
+      raise "Unable to extract taxon information for #{taxon_ref.name} from #{taxon_ref.link}." if extractions.empty?
       extractions.reduce { |a, b| a.merge(b) }
     end
 
@@ -45,15 +45,19 @@ module SpeciesGuesser
     def taxon_from_link(link)
       return nil unless link.attribute('href')
       name = link.text.strip
-      taxon_link = link.attribute('href').value
+      taxon_link = validate_link(link.attribute('href').value)
       TaxonRef.new(name, taxon_link)
+    end
+
+    def validate_link(link)
+      if link.start_with?('/wiki/') then link else nil end
     end
 
     def clean_level_name(level_name)
       level_name.gsub(/\s/, ' ').gsub(/[^A-Za-z_ ]/, '').strip
     end
 
-    private :extract_around_selflink, :taxon_from_link, :clean_level_name
+    private :extract_around_selflink, :taxon_from_link, :clean_level_name, :validate_link
 
   end
 

@@ -14,6 +14,7 @@ module SpeciesGuesser
     # +strategy+:: The strategy that will be used by the computer to play the game.
     # +asker+:: The oracle that will be used to answer the questions.
     def initialize(frequency_counter, fetcher, strategy, asker)
+      @frequency_counter = frequency_counter
       crawler = CachedCrawler.new(Crawler.new(fetcher))
       start_taxon = Taxon.new(crawler, START_TAXON)
       @guesser = Guesser.new(start_taxon, strategy)
