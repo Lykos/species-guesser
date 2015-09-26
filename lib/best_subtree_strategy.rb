@@ -27,7 +27,11 @@ module SpeciesGuesser
     end
 
     def generate_question(state)
-      generate_question_internal(state, state.root_taxon).question
+      question_value = generate_question_internal(state, state.root_taxon)
+      if not question_value
+        raise "Unable to generate a question."
+      end
+      question_value.question
     end
 
     def generate_question_internal(state, root_taxon)
@@ -50,10 +54,7 @@ module SpeciesGuesser
         final_question_value = @frequency_accessor.direct_occurrences(root_taxon)
         question_values.push(ValuedQuestion.new(FinalQuestion.new(root_taxon), final_question_value))
       end
-      if question_values.empty?
-        raise "Unable to generate a question."
-      end
-      question_values.max_by { |q| q.value }
+      question_values.compact.max_by { |q| q.value }
     end
 
     def weight(taxons)

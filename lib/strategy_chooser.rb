@@ -12,6 +12,8 @@ module SpeciesGuesser
     end
 
     STRATEGY_NAMES = [TopDownStrategy::NAME, WeightedTopDownStrategy::NAME, BestSubtreeStrategy::NAME]
+    RANDOM = "random"
+    STRATEGY_NAMES_WITH_RANDOM = STRATEGY_NAMES + [RANDOM]
 
     # Chooses a strategy with the given name.
     # +name+:: Name of the strategy to be chosen.
@@ -20,9 +22,9 @@ module SpeciesGuesser
       when TopDownStrategy::NAME then TopDownStrategy.new
       when WeightedTopDownStrategy::NAME then WeightedTopDownStrategy.new(@frequency_accessor)
       when BestSubtreeStrategy::NAME then BestSubtreeStrategy.new(@frequency_accessor)
-      when "random" then random
+      when RANDOM then random
       else
-        raise "Unkonwn strategy #{name}"
+        raise "Unknown strategy #{name}"
       end
     end
 

@@ -47,9 +47,11 @@ module SpeciesGuesser
         newly_excluded = if answer then children - question_taxons else question_taxons end
         @excluded[super_taxon.taxon_name].merge(newly_excluded)
         # If the user said that it is in a subset of the subtaxons, all the supertaxons are excluded.
-        while super_taxon
-          @final_excluded.add(super_taxon.taxon_name)
-          super_taxon = super_taxon.super_taxon
+        if answer
+          while super_taxon
+            @final_excluded.add(super_taxon.taxon_name)
+            super_taxon = super_taxon.super_taxon
+          end
         end
       end
       # Adjust the root, if we have enough information to do so.
