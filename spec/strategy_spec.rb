@@ -7,6 +7,7 @@ require 'fake_fetcher'
 require 'fixed_asker'
 require 'frequency_counter'
 require 'game'
+require 'ostruct'
 require 'taxon_ref_constructor'
 require 'top_down_strategy'
 require 'weighted_top_down_strategy'
@@ -31,9 +32,6 @@ GUESS_RESULTS = [
 
 shared_examples "a strategy" do
 
-  def play_game(strategy, asker)
-  end
-
   GUESS_RESULTS.each do |input|
 
     final_taxon_name, super_taxon_names = input
@@ -41,8 +39,12 @@ shared_examples "a strategy" do
     it "should guess #{final_taxon_name} correctly" do
       frequency_counter = FrequencyCounter.new(FREQUENCIES.dup)
       asker = FixedAsker.new(final_taxon_name, super_taxon_names)
-      fetcher = FakeFetcher.new
-      game = Game.new(frequency_counter, fetcher, START_TAXON, strategy, asker, false)
+      options = OpenStruct.new
+      options.fake_fetcher = true
+      options.start_taxon = START_TAXON
+      options.debug = false
+      options.strategy = strategy
+      game = Game.new(frequency_counter, asker, options)
       game_result = game.play
       expect(game_result.solution_taxon.taxon_name).to be == final_taxon_name
       expect(frequency_counter.frequencies[final_taxon_name]).to be == (FREQUENCIES[final_taxon_name] + 1)
