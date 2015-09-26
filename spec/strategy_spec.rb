@@ -5,11 +5,11 @@ $:.unshift(File.join(File.dirname(__FILE__), '..', 'spec'))
 require 'best_subtree_strategy'
 require 'fake_fetcher'
 require 'fixed_asker'
-require 'frequency_counter'
 require 'game'
 require 'ostruct'
 require 'taxon_ref_constructor'
 require 'top_down_strategy'
+require 'stats'
 require 'weighted_top_down_strategy'
 
 include SpeciesGuesser
@@ -37,19 +37,21 @@ shared_examples "a strategy" do
     final_taxon_name, super_taxon_names = input
 
     it "should guess #{final_taxon_name} correctly" do
-      frequency_counter = FrequencyCounter.new(FREQUENCIES.dup)
+      stats = Stats.new({:frequencies => FREQUENCIES.dup})
       asker = FixedAsker.new(final_taxon_name, super_taxon_names)
       options = OpenStruct.new
       options.fake_fetcher = true
       options.start_taxon = START_TAXON
       options.debug = false
       options.strategy = strategy
-      game = Game.new(frequency_counter, asker, options)
+      game = Game.new(stats, asker, options)
       game_result = game.play
+      expect(asker.opponent_name).to be == strategy
       expect(game_result.solution_taxon.taxon_name).to be == final_taxon_name
-      expect(frequency_counter.frequencies[final_taxon_name]).to be == (FREQUENCIES[final_taxon_name] + 1)
+      expect(stats.frequencies[final_taxon_name]).to be == (FREQUENCIES[final_taxon_name] + 1)
+      expect(stats.number_of_questions[strategy].length).to be == 1
       super_taxon_names.each do |super_taxon_name|
-        expect(frequency_counter.frequencies[super_taxon_name]).to be == (FREQUENCIES[super_taxon_name] + 1)
+        expect(stats.frequency_counter.frequencies[super_taxon_name]).to be == (FREQUENCIES[super_taxon_name] + 1)
       end
     end
 

@@ -22,7 +22,7 @@ module SpeciesGuesser
 
     # Returns a FrequencyAccessor that can also access the counts, but not change them.
     def accessor
-      FrequencyAccessor.new(@frequencies)
+      @accessor ||= FrequencyAccessor.new(@frequencies)
     end
 
   end

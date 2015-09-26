@@ -16,11 +16,6 @@ end
 
 desc "Run all specs without RCov."
 RSpec::Core::RakeTask.new('default') do |t|
-  t.pattern = SPEC_FILES
-end
-
-desc "Run all specs without RCov."
-RSpec::Core::RakeTask.new('spec_show') do |t|
   t.rspec_opts = ['--format', 'documentation']
   t.pattern = SPEC_FILES
 end

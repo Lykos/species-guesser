@@ -9,6 +9,8 @@ module SpeciesGuesser
       @super_taxon_names = super_taxon_names + [final_taxon_name]
     end
 
+    attr_accessor :opponent_name
+
     def ask(question)
       if question.is_final?
         question.taxon.taxon_name == @final_taxon_name

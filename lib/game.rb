@@ -12,7 +12,7 @@ module SpeciesGuesser
 
   class Game
 
-    # +frequency_counter+:: FrequencyCounter that is to be notified about solutions.
+    # +stats+:: Stats that have to be updated with game statistics.
     # +asker+:: The oracle that will be used to answer the questions.
     # +options+:: A hash containing the configuration for the game. It should contain at
     #             least the following keys:
@@ -22,9 +22,12 @@ module SpeciesGuesser
     #                                fetch local pages instead of real wikipedia pages.
     #             +"start_taxon"+:: String containing the name of the start taxon.
     #             +"debug"+:: Boolean indicating whether or not debug information should be displayed.
-    def initialize(frequency_counter, asker, options)
-      strategy = StrategyChooser.new(frequency_counter.accessor).choose_strategy(options.strategy)
-      @frequency_counter = frequency_counter
+    def initialize(stats, asker, options)
+      @stats = stats
+      @strategy_name = options.strategy
+      strategy_chooser = StrategyChooser.new(stats.frequency_counter.accessor)
+      strategy = strategy_chooser.choose_strategy(@strategy_name)
+      asker.opponent_name = @strategy_name
       fetcher = FetcherChooser::choose_fetcher(options)
       crawler = CachedCrawler.new(Crawler.new(fetcher, options.debug))
       start_taxon_ref = TaxonRefConstructor.construct_taxon_ref(options.start_taxon)
@@ -48,7 +51,8 @@ module SpeciesGuesser
           solution_taxon = question.taxon
         end
       end
-      @frequency_counter.increment_path!(solution_taxon)
+      @stats.frequency_counter.increment_path!(solution_taxon)
+      @stats.add_number_of_questions(@strategy_name, number_of_questions)
       GameResult.new(solution_taxon, number_of_questions)
     end
 

@@ -20,6 +20,10 @@ module SpeciesGuesser
       end
     end
 
+    def opponent_name=(name)
+      puts "You are playing against #{name}."
+    end
+
   end
 
 end

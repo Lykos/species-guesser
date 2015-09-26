@@ -6,7 +6,7 @@ module SpeciesGuesser
     # Initializes the frequency accessor with the given frequencies.
     # +frequencies+:: Map from taxon names to frequencies.
     def initialize(frequencies = {})
-      @frequencies = Hash.new(0).merge(frequencies)
+      @frequencies = frequencies
     end
 
     attr_reader :frequencies
