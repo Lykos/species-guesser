@@ -1,3 +1,4 @@
+require 'answered_question'
 require 'cached_crawler'
 require 'crawler'
 require 'guesser'
@@ -28,7 +29,7 @@ module SpeciesGuesser
 
       until solution_taxon
         question = @guesser.generate_question
-        answered_question = @asker.ask(question)
+        answered_question = AnsweredQuestion.new(question, @asker.ask(question))
         @guesser.apply_answer!(answered_question)
         if question.is_final? and answered_question.answer
           solution_taxon = question.taxon

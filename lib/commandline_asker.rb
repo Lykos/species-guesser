@@ -1,5 +1,3 @@
-require 'answered_question'
-
 module SpeciesGuesser
 
   # Class that is responsible for asking a question to the user and getting an answer.
@@ -13,9 +11,9 @@ module SpeciesGuesser
         puts question
         answer = gets.chomp.downcase.gsub(/\W/, '')
         if YES.include?(answer)
-          return AnsweredQuestion.new(question, true)
+          return true
         elsif NO.include?(answer)
-          return AnsweredQuestion.new(question, false)
+          return false
         else
           puts 'I did not understand that answer. Please answer with "yes" or "no".'
         end
