@@ -6,11 +6,12 @@ module SpeciesGuesser
   class GuessState
 
     # +root_taxon+:: The Taxon at which we start.
-    def initialize(root_taxon)
+    def initialize(root_taxon, debug)
       @root_taxon = root_taxon
       @excluded = {}
       @excluded.default_proc = proc { |hash, key| hash[key] = Set.new }
       @final_excluded = Set.new
+      @debug = debug
     end
 
     attr_reader :root_taxon
@@ -59,6 +60,7 @@ module SpeciesGuesser
           (root_subtaxons = possible_subtaxons(@root_taxon)).length == 1
         @root_taxon = root_subtaxons[0]
       end
+      p self if @debug
     end
 
     def name_set(taxons)

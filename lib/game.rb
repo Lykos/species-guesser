@@ -32,7 +32,7 @@ module SpeciesGuesser
       crawler = CachedCrawler.new(Crawler.new(fetcher, options.debug))
       start_taxon_ref = TaxonRefConstructor.construct_taxon_ref(options.start_taxon)
       start_taxon = Taxon.new(crawler, start_taxon_ref)
-      @guesser = Guesser.new(start_taxon, strategy)
+      @guesser = Guesser.new(start_taxon, strategy, options.debug)
       @asker = asker
     end
 

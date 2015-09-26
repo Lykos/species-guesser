@@ -47,6 +47,8 @@ module SpeciesGuesser
         if candidate_subtaxon
           question_values.push(generate_question_internal(state, candidate_subtaxon))
         end
+      elsif subtaxons.length == 1
+        question_values.push(generate_question_internal(state, subtaxons.first))
       end
       if state.possible_final_taxon?(root_taxon)
         # TODO The value of final questions is actually higher because you don't only get information,

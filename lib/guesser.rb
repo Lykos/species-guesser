@@ -7,8 +7,8 @@ module SpeciesGuesser
   # The main class that plays the game, i.e. it generates the questions for the user and uses helper classes to find subtaxons of a given taxon.
   class Guesser
 
-    def initialize(start_taxon, strategy)
-      @state = GuessState.new(start_taxon)
+    def initialize(start_taxon, strategy, debug)
+      @state = GuessState.new(start_taxon, debug)
       @strategy = strategy
     end
 
