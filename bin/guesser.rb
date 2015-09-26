@@ -16,6 +16,8 @@ frequency_counter = persistence.load
 fetcher = FetcherChooser::choose_fetcher(options)
 asker = CommandlineAsker.new
 game = Game.new(frequency_counter, fetcher, options.start_taxon, options.strategy, asker, options.debug)
-taxon = game.play
-puts "The SpeciesGuesser found the #{taxon.level_name} #{taxon.taxon_name}!"
+game_result = game.play
+taxon = game_result.solution_taxon
+number_of_questions = game_result.number_of_questions
+puts "The SpeciesGuesser found the #{taxon.level_name} #{taxon.taxon_name} in #{number_of_questions} questions!"
 persistence.save(frequency_counter)

@@ -1,6 +1,7 @@
 require 'answered_question'
 require 'cached_crawler'
 require 'crawler'
+require 'game_result'
 require 'guesser'
 require 'strategy_chooser'
 require 'taxon'
@@ -30,9 +31,11 @@ module SpeciesGuesser
     # returns that solution taxon. It also increments the counts for the solution taxon.
     def play
       solution_taxon = nil
+      number_of_questions = 0
 
       until solution_taxon
         question = @guesser.generate_question
+        number_of_questions += 1
         answered_question = AnsweredQuestion.new(question, @asker.ask(question))
         @guesser.apply_answer!(answered_question)
         if question.is_final? and answered_question.answer
@@ -40,7 +43,7 @@ module SpeciesGuesser
         end
       end
       @frequency_counter.increment_path!(solution_taxon)
-      solution_taxon
+      GameResult.new(solution_taxon, number_of_questions)
     end
 
   end

@@ -43,7 +43,8 @@ shared_examples "a strategy" do
       asker = FixedAsker.new(final_taxon_name, super_taxon_names)
       fetcher = FakeFetcher.new
       game = Game.new(frequency_counter, fetcher, START_TAXON, strategy, asker, false)
-      expect(game.play.taxon_name).to be == final_taxon_name
+      game_result = game.play
+      expect(game_result.solution_taxon.taxon_name).to be == final_taxon_name
       expect(frequency_counter.frequencies[final_taxon_name]).to be == (FREQUENCIES[final_taxon_name] + 1)
       super_taxon_names.each do |super_taxon_name|
         expect(frequency_counter.frequencies[super_taxon_name]).to be == (FREQUENCIES[super_taxon_name] + 1)
