@@ -5,9 +5,8 @@ module SpeciesGuesser
   # Fake fetcher that fetches local data instead of wikipedia pages.
   class FakeFetcher
 
-    # +base_directory+:: The directory where all the fake pages are in.
-    def initialize(base_directory)
-      @base_directory = base_directory
+    def initialize
+      @base_directory = File.join(File.dirname(__FILE__), "pages")
     end
 
     def get(link)

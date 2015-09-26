@@ -7,7 +7,7 @@ module SpeciesGuesser
 
     def self.choose_fetcher(options)
       if options.fake_fetcher
-        FakeFetcher.new(File.join(File.dirname(__FILE__), "pages"))
+        FakeFetcher.new
       else
         Mechanize.new
       end
