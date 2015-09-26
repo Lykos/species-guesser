@@ -1,34 +1,28 @@
+require 'frequency_accessor'
+
 module SpeciesGuesser
 
-  # Class that keeps track of how many times each species occurs.
-  class FrequencyCounter
+  # Class that keeps track of how many times each species occurs. It can also increment the count.
+  class FrequencyCounter < FrequencyAccessor
 
-    # Initializes the frequency counter with the given frequencies.
-    # +frequencies+:: Map from taxon names to frequencies.
-    def initialize(frequencies = {})
-      @frequencies = Hash.new(0).merge(frequencies)
-    end
-
-    attr_reader :frequencies
-
-    # Notifies the frequency counter that a taxon has been encountered, i.e. it was the taxon the user chose or one of its ancestors.
+    # Notifies the frequency counter that a taxon has been encountered, i.e. it was the taxon the user chose or one of its supertaxons.
     # +taxon+:: The Taxon that was encountered.
     def increment!(taxon)
       @frequencies[taxon.taxon_name] += 1
     end
 
-    # Returns how many times a given taxon was encountered.
-    # +taxon+:: The Taxon whose number of occurrences should be returned.
-    def occurrences(taxon)
-      @frequencies[taxon.taxon_name]
+    # Notifies the frequency counter that a taxon was the taxon the user chose and increments all the supertaxons.
+    # +taxon+:: The Taxon that was encountered.
+    def increment_path!(taxon)
+      while taxon
+        increment!(taxon)
+        taxon = taxon.super_taxon
+      end
     end
 
-    # Returns how many times a given taxon was encountered directly
-    # without counting occurrences of its subtaxons.
-    # I.e. how many times was this the final solution to the game.
-    # +taxon+:: The Taxon whose number of direct occurrences should be returned.
-    def direct_occurrences(taxon)
-      occurrences(taxon) - taxon.subtaxons.map { |t| occurrences(t) }.inject(0, :+)
+    # Returns a FrequencyAccessor that can also access the counts, but not change them.
+    def accessor
+      FrequencyAccessor.new(@frequencies)
     end
 
   end

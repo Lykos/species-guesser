@@ -1,5 +1,4 @@
-require 'taxon'
-require 'taxon_group'
+require 'taxon_ref'
 require 'taxon_info'
 
 module SpeciesGuesser
@@ -10,14 +9,15 @@ module SpeciesGuesser
     TOP_TAXON_LEVEL = 'Superregnum'
 
     # On the given page from https://species.wikimedia.org, finds all the subtaxons of the taxon the page represents.
+    # +taxon_ref+:: The TaxonRef for which this taxon was fetched. Only used for reporting purposes.
     # +page+:: A page returned from the Mechanize crawler or a Nokogiri object.
-    def find_subtaxons(page)
+    def find_subtaxons(taxon_ref, page)
       interesting_area = page.at('#mw-content-text')
       p_children = interesting_area.children.select { |child| child.name == 'p' }
       extractions = p_children.map do |p_child|
         extract_around_selflink(p_child)
       end.compact
-      raise "Unable to extract taxon information from https://species.wikimedia.org." if extractions.empty?
+      raise "Unable to extract taxon information from #{taxon_ref.link}." if extractions.empty?
       extractions.reduce { |a, b| a.merge(b) }
     end
 
@@ -39,25 +39,7 @@ module SpeciesGuesser
         link = if sibling.name == 'a' then sibling else sibling.at('a') end
         sub_taxons.push(taxon_from_link(link)) if link
       end
-      taxon_group = TaxonGroup.new(sub_level_name, sub_taxons.compact)
-      return TaxonInfo.new(level_name, taxon_name, taxon_group)
-    end
-
-    # On the given main page from https://species.wikimedia.org, finds all the top level taxons.
-    # +page+:: A page returned from the Mechanize crawler or a Nokogiri object.
-    def find_top_taxons(page)
-      interesting_area = page.at('#mw-content-text')
-      TaxonGroup.new(TOP_TAXON_LEVEL, extract_top_taxons(interesting_area))
-    end
-
-    def extract_top_taxons(element)
-      if element.children.empty?
-        return []
-      elsif element.children[0].text? and element.children.length >= 2 and element.children[0].text.include?(TOP_TAXON_LEVEL)
-        return taxon_from_link(element.children[1])
-      else
-        element.children.map { |child| extract_top_taxons(child) }.flatten
-      end
+      return TaxonInfo.new(level_name, taxon_name, sub_level_name, sub_taxons.compact)
     end
 
     def taxon_from_link(link)
@@ -71,7 +53,7 @@ module SpeciesGuesser
       level_name.gsub(/\s/, ' ').gsub(/[^A-Za-z_ ]/, '').strip
     end
 
-    private :extract_around_selflink, :taxon_from_link, :extract_top_taxons, :clean_level_name
+    private :extract_around_selflink, :taxon_from_link, :clean_level_name
 
   end
 

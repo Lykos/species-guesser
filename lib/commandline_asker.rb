@@ -3,7 +3,7 @@ require 'answered_question'
 module SpeciesGuesser
 
   # Class that is responsible for asking a question to the user and getting an answer.
-  class Asker
+  class CommandlineAsker
 
     YES = ["j", "ja", "y", "yes"]
     NO = ["n", "nein", "n", "no"]

@@ -27,11 +27,11 @@ module SpeciesGuesser
 
     # The level name of the subtaxons in plural, e.g. "Familiae".
     def sublevel_name
-      @sub_evel_name ||= taxon_info.taxon_group.level_name
+      @sublevel_name ||= taxon_info.sublevel_name
     end
 
     def subtaxons
-      @subtaxons ||= taxon_info.taxon_group.taxons.collect { |taxon_ref| Taxon.new(@crawler, taxon_ref, self) }
+      @subtaxons ||= taxon_info.subtaxons.collect { |taxon_ref| Taxon.new(@crawler, taxon_ref, self) }
     end
 
     def taxon_info

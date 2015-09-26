@@ -8,9 +8,9 @@ module SpeciesGuesser
 
     NAME = "weighted_top_down"
 
-    # +frequency_counter+:: The frequency counter that can be queried for the number of times taxons have occurred in the past.
-    def initialize(frequency_counter)
-      @frequency_counter = frequency_counter
+    # +frequency_accessor+:: The frequency counter that can be queried for the number of times taxons have occurred in the past.
+    def initialize(frequency_accessor)
+      @frequency_accessor = frequency_accessor
     end
 
     def name
@@ -23,7 +23,7 @@ module SpeciesGuesser
         FinalQuestion.new(root_taxon)
       else
         taxons = state.possible_subtaxons(root_taxon)
-        taxon_subset = WeightedSplitter::weighted_split(taxons) { |t| @frequency_counter.occurrences(t) }
+        taxon_subset = WeightedSplitter::weighted_split(taxons) { |t| @frequency_accessor.occurrences(t) }
         SubsetQuestion.new(root_taxon, taxon_subset)
       end
     end

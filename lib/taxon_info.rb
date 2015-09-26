@@ -4,31 +4,43 @@ module SpeciesGuesser
   # This is the result that is returned after a https://species.wikimedia.org page has been fetched.
   class TaxonInfo
 
-    NEUTRAL_TAXON_NAME = 'taxon'
+    NEUTRAL_TAXON_NAME_SINGULAR = 'taxon'
+    NEUTRAL_TAXON_NAME_PLURAL = 'taxons'
 
     # +level_name+:: The name of the level of the taxon in singular, e.g. "Familia".
     # +taxon_name+:: The name of the taxon in plural, e.g. "Mammalia".
-    # +taxon_group+:: The subtaxons including the plural name of the level.
-    def initialize(level_name, taxon_name, taxon_group)
-      @level_name = level_name || NEUTRAL_TAXON_NAME
+    # +sublevel_name+:: The name of the level of the subtaxons in plural, e.g. "Familiae".
+    # +subtaxons+:: The TaxonRefs representing the subtaxons.
+    def initialize(level_name, taxon_name, sublevel_name, subtaxons)
+      @level_name = level_name || NEUTRAL_TAXON_NAME_SINGULAR
       @taxon_name = taxon_name
-      @taxon_group = taxon_group
+      @sublevel_name = sublevel_name || NEUTRAL_TAXON_NAME_PLURAL
+      @subtaxons = subtaxons
     end
 
-    attr_reader :level_name, :taxon_name, :taxon_group
+    attr_reader :level_name, :taxon_name, :sublevel_name, :subtaxons
 
     # Creates a new TaxonInfo by merging this object with another taxon info.
     # Raises an error in case of incompatible TaxonInfos, i.e. when the taxon groups, names or level names are incompatible.
     # +other+:: Another TaxonInfo.
     def merge(other)
-      if @level_name != NEUTRAL_TAXON_NAME and other.level_name != NEUTRAL_TAXON_NAME and @level_name != other.level_name
-        raise "Incompatible level names #{@level_name} and #{other.level_name}."
-      end
-      level_name = if @level_name == NEUTRAL_TAXON_NAME then other.level_name else @level_name end
+      level_name = merge_names("level names", NEUTRAL_TAXON_NAME_SINGULAR, @level_name, other.level_name)
       if @taxon_name != other.taxon_name
         raise "Incompatible taxon names #{@taxon_name} and #{other.taxon_name}."
       end
-      TaxonInfo.new(level_name, @taxon_name, @taxon_group.merge(other.taxon_group))
+      sublevel_name = merge_names("sublevel names", NEUTRAL_TAXON_NAME_PLURAL, @sublevel_name, other.sublevel_name)
+      TaxonInfo.new(level_name, @taxon_name, sublevel_name, @taxons + other.taxons)
+    end
+
+    def merge_names(name_type, neutral_name, *names)
+      unique_names = names.filter { |n| n != neutral_name }.uniq
+      if unique_names.empty?
+        neutral_name
+      elsif unique_names.size == 1
+        unique_names[0]
+      else
+        raise ArgumentError, "Incompatible #{name_type} '#{unique_names[0]}' and '#{unique_names[1]}'."
+      end
     end
 
   end

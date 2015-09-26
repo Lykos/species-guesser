@@ -3,11 +3,12 @@
 $:.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'crawler'
+require 'mechanize'
 require 'taxon_ref'
 
 include SpeciesGuesser
 
-crawler = Crawler.new
+crawler = Crawler.new(Mechanize.new)
 for name in ARGV
   link = "/wiki/" + name.gsub(/\s/, '_').gsub(/\W+/, '')
   taxon = TaxonRef.new(name, link)
