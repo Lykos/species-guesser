@@ -13,7 +13,8 @@ include SpeciesGuesser
 persistence = FrequencyPersistence.new
 frequency_counter = persistence.load
 fetcher = Mechanize.new
-strategy = StrategyChooser.new(frequency_counter.accessor).random
+strategy_name = ARGV[0] || "random"
+strategy = StrategyChooser.new(frequency_counter.accessor).choose_strategy(strategy_name)
 puts "Chose strategy #{strategy.name}."
 asker = CommandlineAsker.new
 game = Game.new(frequency_counter, fetcher, strategy, asker)

@@ -9,8 +9,7 @@ module SpeciesGuesser
     def initialize(root_taxon)
       @root_taxon = root_taxon
       @excluded = {}
-      @excluded.default = Set.new
-      @possible_subtaxons = {}
+      @excluded.default_proc = proc { |hash, key| hash[key] = Set.new }
       @final_excluded = Set.new
     end
 
@@ -47,6 +46,11 @@ module SpeciesGuesser
         question_taxons = name_set(question.taxons)
         newly_excluded = if answer then children - question_taxons else question_taxons end
         @excluded[super_taxon.taxon_name].merge(newly_excluded)
+        # If the user said that it is in a subset of the subtaxons, all the supertaxons are excluded.
+        while super_taxon
+          @final_excluded.add(super_taxon.taxon_name)
+          super_taxon = super_taxon.super_taxon
+        end
       end
       # Adjust the root, if we have enough information to do so.
       while (not possible_final_taxon?(@root_taxon)) and
@@ -57,6 +61,10 @@ module SpeciesGuesser
 
     def name_set(taxons)
       taxons.map { |t| t.taxon_name }.to_set
+    end
+
+    def inspect
+      "root_taxon=#{@root_taxon.taxon_name} excluded=#{@excluded} final_excluded=#{@final_excluded.inspect}"
     end
 
     private :name_set

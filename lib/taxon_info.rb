@@ -29,11 +29,11 @@ module SpeciesGuesser
         raise "Incompatible taxon names #{@taxon_name} and #{other.taxon_name}."
       end
       sublevel_name = merge_names("sublevel names", NEUTRAL_TAXON_NAME_PLURAL, @sublevel_name, other.sublevel_name)
-      TaxonInfo.new(level_name, @taxon_name, sublevel_name, @taxons + other.taxons)
+      TaxonInfo.new(level_name, @taxon_name, sublevel_name, @subtaxons + other.subtaxons)
     end
 
     def merge_names(name_type, neutral_name, *names)
-      unique_names = names.filter { |n| n != neutral_name }.uniq
+      unique_names = names.select { |n| n != neutral_name }.uniq
       if unique_names.empty?
         neutral_name
       elsif unique_names.size == 1

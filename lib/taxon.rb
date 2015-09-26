@@ -38,6 +38,10 @@ module SpeciesGuesser
       @taxon_info ||= @crawler.get_taxon_info(@taxon_ref)
     end
 
+    def inspect
+      @inspect ||= taxon_info.inspect
+    end
+
     private :taxon_info
 
   end
