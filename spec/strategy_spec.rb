@@ -14,6 +14,7 @@ require 'weighted_top_down_strategy'
 include SpeciesGuesser
 
 FREQUENCIES = {"Wölfe" => 1, "Füchse" => 2, "Hunde" => 4, "Hundeartige" => 4, "Raubtiere" => 4}
+FREQUENCIES.default = 0
 START_TAXON = "Raubtiere"
 GUESS_RESULTS = [ 
                  ["Raubtiere", %w()],
@@ -31,17 +32,22 @@ GUESS_RESULTS = [
 shared_examples "a strategy" do
 
   def play_game(strategy, asker)
-    frequency_counter = FrequencyCounter.new(FREQUENCIES)
-    fetcher = FakeFetcher.new
-    game = Game.new(frequency_counter, fetcher, START_TAXON, strategy, asker, false)
-    game.play
   end
 
   GUESS_RESULTS.each do |input|
 
-    it "should guess #{input[0]} correctly" do
-      asker = FixedAsker.new(input[0], input[1])
-      expect(play_game(strategy, asker).taxon_name).to be == input[0]
+    final_taxon_name, super_taxon_names = input
+
+    it "should guess #{final_taxon_name} correctly" do
+      frequency_counter = FrequencyCounter.new(FREQUENCIES.dup)
+      asker = FixedAsker.new(final_taxon_name, super_taxon_names)
+      fetcher = FakeFetcher.new
+      game = Game.new(frequency_counter, fetcher, START_TAXON, strategy, asker, false)
+      expect(game.play.taxon_name).to be == final_taxon_name
+      expect(frequency_counter.frequencies[final_taxon_name]).to be == (FREQUENCIES[final_taxon_name] + 1)
+      super_taxon_names.each do |super_taxon_name|
+        expect(frequency_counter.frequencies[super_taxon_name]).to be == (FREQUENCIES[super_taxon_name] + 1)
+      end
     end
 
   end
