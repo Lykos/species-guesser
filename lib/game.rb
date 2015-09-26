@@ -8,16 +8,16 @@ module SpeciesGuesser
 
   class Game
 
-    START_TAXON = TaxonRef.new('Animalia', '/wiki/Animalia')
-
     # +frequency_counter+:: FrequencyCounter that is to be notified about solutions.
     # +fetcher+:: Object that can fetch wikipedia pages.
+    # +start_taxon_ref+:: TaxonRef that is used as the start taxon.
     # +strategy+:: The strategy that will be used by the computer to play the game.
     # +asker+:: The oracle that will be used to answer the questions.
-    def initialize(frequency_counter, fetcher, strategy, asker)
+    # +verbose+:: If this is true, then some components will log their actions and state occasionally.
+    def initialize(frequency_counter, fetcher, start_taxon_ref, strategy, asker, verbose)
       @frequency_counter = frequency_counter
-      crawler = CachedCrawler.new(Crawler.new(fetcher))
-      start_taxon = Taxon.new(crawler, START_TAXON)
+      crawler = CachedCrawler.new(Crawler.new(fetcher, verbose))
+      start_taxon = Taxon.new(crawler, start_taxon_ref)
       @guesser = Guesser.new(start_taxon, strategy)
       @asker = asker
     end

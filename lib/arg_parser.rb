@@ -10,6 +10,8 @@ module SpeciesGuesser
       options = OpenStruct.new
       options.strategy = StrategyChooser::RANDOM
       options.debug = false
+      options.start_taxon = "Animalia"
+      options.fake_fetcher = false
 
       option_parser = OptionParser.new do |opts|
         strategies = StrategyChooser::STRATEGY_NAMES_WITH_RANDOM
@@ -24,6 +26,14 @@ module SpeciesGuesser
 
         opts.on("-d", "--[no-]debug", "Run in debug mode") do |d|
           options.debug = d
+        end
+
+        opts.on("-t", "--start_taxon TAXON", "Choose TAXON as the start taxon for the guessing game") do |t|
+          options.start_taxon = t
+        end
+
+        opts.on("-f", "--[no-]fake_fetcher", "Use a fake fetcher to fetch pages from the pages/ directory instead of real Wikispecies pages.") do |f|
+          options.fake_fetcher = f
         end
 
         opts.on_tail("-h", "--help", "Show this message") do
