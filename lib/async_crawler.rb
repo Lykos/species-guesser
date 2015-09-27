@@ -23,11 +23,7 @@ module SpeciesGuesser
           # Create one crawler per thread in the thread pool.
           crawler = Thread.current[:crawler] ||= @create_crawler.call
           taxon_info = crawler.get_taxon_info(taxon_ref)
-          if @frequency_accessor.frequency(taxon_info) > 0
-            # For previously encountered taxons, fetch the children as well
-            # because they are likely to be needed.
-            taxon_info.subtaxons.each { |t| prepare_taxon_info(t) }
-          end
+          prepare_important_subtaxons(taxon_info)
           taxon_info
         end
       end
@@ -37,6 +33,16 @@ module SpeciesGuesser
     # +taxon_ref+:: A TaxonRef containing the link of a taxon.
     def get_taxon_info(taxon_ref)
       prepare_taxon_info(taxon_ref).value
+    end
+
+    private
+
+    # For previously encountered taxons, fetch the children as well
+    # because they are likely to be needed.
+    def prepare_important_subtaxons(taxon_info)
+      if @frequency_accessor.frequency(taxon_info) > 0
+        taxon_info.subtaxons.each { |t| prepare_taxon_info(t) }
+      end
     end
 
   end

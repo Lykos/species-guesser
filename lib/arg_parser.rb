@@ -12,7 +12,7 @@ module SpeciesGuesser
       options.debug = false
       options.start_taxon = "Animalia"
       options.fake_fetcher = false
-      options.concurrent = false
+      options.concurrent = true
 
       option_parser = OptionParser.new do |opts|
         strategies = StrategyChooser::STRATEGY_NAMES_WITH_RANDOM
