@@ -24,9 +24,9 @@ module SpeciesGuesser
     #             +"debug"+:: Boolean indicating whether or not debug information should be displayed.
     def initialize(stats, asker, options)
       @stats = stats
-      @strategy_name = options.strategy
       strategy_chooser = StrategyChooser.new(stats.frequency_counter.accessor)
-      strategy = strategy_chooser.choose_strategy(@strategy_name)
+      strategy = strategy_chooser.choose_strategy(options.strategy)
+      @strategy_name = strategy.name
       asker.opponent_name = @strategy_name
       fetcher = FetcherChooser::choose_fetcher(options)
       crawler = CachedCrawler.new(Crawler.new(fetcher, options.debug))
@@ -39,20 +39,23 @@ module SpeciesGuesser
     # Plays the game between the guesser and the asker until a solution taxon is found and
     # returns that solution taxon. It also increments the counts for the solution taxon.
     def play
+      game_stats = @stats.new_game_stats
+      game_stats.strategy = @strategy_name
       solution_taxon = nil
       number_of_questions = 0
 
       until solution_taxon
         question = @guesser.generate_question
-        number_of_questions += 1
+        game_stats.add_question(question)
         answered_question = AnsweredQuestion.new(question, @asker.ask(question))
         @guesser.apply_answer!(answered_question)
         if question.is_final? and answered_question.answer
           solution_taxon = question.taxon
         end
       end
+      
       @stats.frequency_counter.increment_path!(solution_taxon)
-      @stats.add_number_of_questions(@strategy_name, number_of_questions)
+      game_stats.solution = solution_taxon
       GameResult.new(solution_taxon, number_of_questions)
     end
 

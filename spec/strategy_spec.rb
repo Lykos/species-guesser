@@ -49,7 +49,8 @@ shared_examples "a strategy" do
       expect(asker.opponent_name).to be == strategy
       expect(game_result.solution_taxon.taxon_name).to be == final_taxon_name
       expect(stats.frequencies[final_taxon_name]).to be == (FREQUENCIES[final_taxon_name] + 1)
-      expect(stats.number_of_questions[strategy].length).to be == 1
+      expect(stats.games.length).to be == 1
+      expect(stats.games[0][:strategy]).to be == strategy
       super_taxon_names.each do |super_taxon_name|
         expect(stats.frequency_counter.frequencies[super_taxon_name]).to be == (FREQUENCIES[super_taxon_name] + 1)
       end

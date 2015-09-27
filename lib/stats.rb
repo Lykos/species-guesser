@@ -1,4 +1,5 @@
 require 'frequency_counter'
+require 'game_stats'
 
 module SpeciesGuesser
 
@@ -10,36 +11,25 @@ module SpeciesGuesser
     end
 
     def frequencies
-      @frequencies ||= frequencies_internal
+      @frequencies ||= begin
+                         result = @stats[:frequencies] ||= {}
+                         result.default = 0
+                         result
+                       end
     end
 
-    def frequencies_internal
-      result = @stats[:frequencies] ||= {}
-      result.default = 0
-      result
-    end
-
-    def number_of_questions
-      @number_of_questions ||= number_of_questions_internal
-    end
-
-    def number_of_questions_internal
-      result = @stats[:number_of_questions] ||= {}
-      result.default_proc = proc { |hash, key| hash[key] = [] }
-      result
-    end
-
-    private :number_of_questions_internal, :frequencies_internal
-
-    # Notifies the Stats that the game has been won by the given strategy in the given number of questions.
-    # +strategy+:: The strategy that won the game.
-    # +number+:: The number of questions it needed.
-    def add_number_of_questions(strategy, number)
-      number_of_questions[strategy].push(number)
+    def games
+      @games ||= @stats[:games] ||= []
     end
 
     def frequency_counter
       @frequency_counter ||= FrequencyCounter.new(frequencies)
+    end
+
+    def new_game_stats
+      result = GameStats.new
+      games.push(result.game)
+      result
     end
 
     attr_reader :stats
