@@ -7,9 +7,12 @@ module SpeciesGuesser
 
   class CrawlerChooser
 
-    def self.choose_crawler(options)
+    def self.choose_crawler(options, frequency_accessor)
       crawler = if options.concurrent
-                  AsyncCrawler.new { create_simple_crawler(options) }
+                  AsyncCrawler.new(frequency_accessor) do
+                    puts "Creating new crawler." if options.debug
+                    create_simple_crawler(options)
+                  end
                 else
                   create_simple_crawler(options)
                 end

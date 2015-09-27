@@ -25,9 +25,10 @@ module SpeciesGuesser
       strategy = StrategyChooser.choose_strategy(options.strategy)
       @strategy_name = strategy.name
       asker.opponent_name = @strategy_name
-      crawler = CrawlerChooser::choose_crawler(options)
+      frequency_accessor = stats.frequency_counter.accessor
+      crawler = CrawlerChooser::choose_crawler(options, frequency_accessor)
       start_taxon_ref = TaxonRefConstructor.construct_taxon_ref(options.start_taxon)
-      start_taxon = Taxon.new(crawler, start_taxon_ref, stats.frequency_counter.accessor)
+      start_taxon = Taxon.new(crawler, start_taxon_ref, frequency_accessor)
       @guesser = Guesser.new(start_taxon, strategy, options.debug)
       @asker = asker
     end
