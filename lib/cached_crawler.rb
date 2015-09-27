@@ -7,9 +7,15 @@ module SpeciesGuesser
     def initialize(crawler)
       @crawler = crawler
       @cache = {}
-    end    
+    end
 
-    # Queries https://species.wikimedia.org for a taxon and returns a TaxonInfo containing detailed information about it.
+    # Notifies the crawler that the given TaxonRef should be fetched soon.
+    # +taxon_ref+:: A TaxonRef containing the link of a taxon.
+    def prepare_taxon_info(taxon_ref)
+      @crawler.prepare_taxon_info(taxon_ref)
+    end
+
+    # Queries the underlying crawler for a TaxonInfo.
     # +taxon_ref+:: A TaxonRef containing the link of a taxon.
     def get_taxon_info(taxon_ref)
       @cache[taxon_ref.link] ||= @crawler.get_taxon_info(taxon_ref)

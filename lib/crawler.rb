@@ -15,6 +15,12 @@ module SpeciesGuesser
       @subtaxon_finder = SubtaxonFinder.new
     end
 
+    # Notifies the crawler that the given taxon ref should be fetched soon.
+    # Does nothing because this crawler is not able to do asynchronous fetches.
+    # +taxon_ref+:: A TaxonRef containing the link of a taxon.
+    def prepare_taxon_info(taxon_ref)
+    end
+
     # Queries https://species.wikimedia.org for a taxon and returns a TaxonInfo containing detailed information about it.
     # +taxon_ref+:: A TaxonRef containing the link of a taxon.
     def get_taxon_info(taxon_ref)

@@ -15,6 +15,14 @@ module SpeciesGuesser
       to_a <=> other.to_a
     end
 
+    def eql?(other)
+      to_a.eql?(other.to_a)
+    end
+
+    def hash
+      to_a.hash
+    end
+
     def to_a
       [@name, @link]
     end

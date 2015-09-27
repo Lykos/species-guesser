@@ -24,7 +24,7 @@ module SpeciesGuesser
     end
 
     # Chooses a random strategy.
-    def random
+    def self.random
       choose_strategy(STRATEGY_NAMES.sample)
     end
 

@@ -44,6 +44,7 @@ shared_examples "a strategy" do
       options.start_taxon = START_TAXON
       options.debug = false
       options.strategy = strategy
+      options.concurrent = false
       game = Game.new(stats, asker, options)
       game_result = game.play
       expect(asker.opponent_name).to be == strategy

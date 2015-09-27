@@ -1,7 +1,5 @@
 require 'answered_question'
-require 'cached_crawler'
-require 'crawler'
-require 'fetcher_chooser'
+require 'crawler_chooser'
 require 'game_result'
 require 'guesser'
 require 'strategy_chooser'
@@ -27,8 +25,7 @@ module SpeciesGuesser
       strategy = StrategyChooser.choose_strategy(options.strategy)
       @strategy_name = strategy.name
       asker.opponent_name = @strategy_name
-      fetcher = FetcherChooser::choose_fetcher(options)
-      crawler = CachedCrawler.new(Crawler.new(fetcher, options.debug))
+      crawler = CrawlerChooser::choose_crawler(options)
       start_taxon_ref = TaxonRefConstructor.construct_taxon_ref(options.start_taxon)
       start_taxon = Taxon.new(crawler, start_taxon_ref, stats.frequency_counter.accessor)
       @guesser = Guesser.new(start_taxon, strategy, options.debug)

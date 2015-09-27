@@ -12,6 +12,7 @@ module SpeciesGuesser
       options.debug = false
       options.start_taxon = "Animalia"
       options.fake_fetcher = false
+      options.concurrent = false
 
       option_parser = OptionParser.new do |opts|
         strategies = StrategyChooser::STRATEGY_NAMES_WITH_RANDOM
@@ -22,6 +23,10 @@ module SpeciesGuesser
             exit
           end
           options.strategy = s.downcase
+        end
+
+        opts.on("-c", "--[no-]concurrent", "Fetch Wikispecies pages using multiple threads") do |c|
+          options.concurrent = c
         end
 
         opts.on("-d", "--[no-]debug", "Run in debug mode") do |d|

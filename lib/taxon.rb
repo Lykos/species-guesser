@@ -13,6 +13,7 @@ module SpeciesGuesser
       @taxon_ref = taxon_ref
       @frequency_accessor = frequency_accessor 
       @super_taxon = super_taxon
+      crawler.prepare_taxon_info(taxon_ref)
     end
 
     attr_reader :super_taxon
