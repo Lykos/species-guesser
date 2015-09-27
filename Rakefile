@@ -7,14 +7,7 @@ SOURCE_FILES = 'lib/**/*.rb'
 README = 'README.md'
 RDOC_DIR = 'doc'
 
-desc "Run all specs with RCov."
-RSpec::Core::RakeTask.new('spec_with_rcov') do |t|
-  t.pattern = SPEC_FILES
-  t.rcov = true
-  t.rcov_opts = ['--exclude', 'test', '--threshold', '100', '--text-summary', '--include', SOURCE_FILES]
-end
-
-desc "Run all specs without RCov."
+desc "Run all specs."
 RSpec::Core::RakeTask.new('default') do |t|
   t.rspec_opts = ['--format', 'documentation']
   t.pattern = SPEC_FILES
