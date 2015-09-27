@@ -6,10 +6,12 @@ module SpeciesGuesser
 
     # +crawler+:: The crawler that will be query https://species.wikimedia.org pages.
     # +taxon_ref+:: The TaxonRef whose information this taxon should fetch and represent.
+    # +frequency_accessor+:: The frequency counter that can be queried for the number of times taxons have occurred in the past.
     # +super_taxon+:: The Taxon which is the supertaxon of this taxon.
-    def initialize(crawler, taxon_ref, super_taxon=nil)
+    def initialize(crawler, taxon_ref, frequency_accessor, super_taxon=nil)
       @crawler = crawler
       @taxon_ref = taxon_ref
+      @frequency_accessor = frequency_accessor 
       @super_taxon = super_taxon
     end
 
@@ -31,7 +33,7 @@ module SpeciesGuesser
     end
 
     def subtaxons
-      @subtaxons ||= taxon_info.subtaxons.collect { |taxon_ref| Taxon.new(@crawler, taxon_ref, self) }
+      @subtaxons ||= taxon_info.subtaxons.collect { |taxon_ref| Taxon.new(@crawler, taxon_ref, @frequency_accessor, self) }
     end
 
     def taxon_info
@@ -40,6 +42,16 @@ module SpeciesGuesser
 
     def inspect
       @inspect ||= taxon_info.inspect
+    end
+
+    def frequency
+      @frequency ||= begin
+                       @frequency_accessor.frequency(self)
+                     end
+    end
+
+    def direct_frequency
+      @direct_frequency ||= @frequency_accessor.direct_frequency(self)
     end
 
     private :taxon_info

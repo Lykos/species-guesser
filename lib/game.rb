@@ -24,14 +24,13 @@ module SpeciesGuesser
     #             +"debug"+:: Boolean indicating whether or not debug information should be displayed.
     def initialize(stats, asker, options)
       @stats = stats
-      strategy_chooser = StrategyChooser.new(stats.frequency_counter.accessor)
-      strategy = strategy_chooser.choose_strategy(options.strategy)
+      strategy = StrategyChooser.choose_strategy(options.strategy)
       @strategy_name = strategy.name
       asker.opponent_name = @strategy_name
       fetcher = FetcherChooser::choose_fetcher(options)
       crawler = CachedCrawler.new(Crawler.new(fetcher, options.debug))
       start_taxon_ref = TaxonRefConstructor.construct_taxon_ref(options.start_taxon)
-      start_taxon = Taxon.new(crawler, start_taxon_ref)
+      start_taxon = Taxon.new(crawler, start_taxon_ref, stats.frequency_counter.accessor)
       @guesser = Guesser.new(start_taxon, strategy, options.debug)
       @asker = asker
     end

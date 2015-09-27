@@ -13,7 +13,7 @@ module SpeciesGuesser
 
     # Returns how many times a given taxon was encountered.
     # +taxon+:: The Taxon whose number of occurrences should be returned.
-    def occurrences(taxon)
+    def frequency(taxon)
       @frequencies[taxon.taxon_name]
     end
 
@@ -21,8 +21,8 @@ module SpeciesGuesser
     # without counting occurrences of its subtaxons.
     # I.e. how many times was this the final solution to the game.
     # +taxon+:: The Taxon whose number of direct occurrences should be returned.
-    def direct_occurrences(taxon)
-      occurrences(taxon) - taxon.subtaxons.map { |t| occurrences(t) }.inject(0, :+)
+    def direct_frequency(taxon)
+      frequency(taxon) - taxon.subtaxons.map { |t| frequency(t) }.inject(0, :+)
     end
 
   end
