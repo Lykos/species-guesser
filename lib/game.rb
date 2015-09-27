@@ -47,6 +47,7 @@ module SpeciesGuesser
       until solution_taxon
         question = @guesser.generate_question
         game_stats.add_question(question)
+        number_of_questions += 1
         answered_question = AnsweredQuestion.new(question, @asker.ask(question))
         @guesser.apply_answer!(answered_question)
         if question.is_final? and answered_question.answer
